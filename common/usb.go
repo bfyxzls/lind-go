@@ -1,15 +1,15 @@
-package main
+package common
 
 import (
 	"fmt"
-	"lind-go/common"
-	_ "lind-go/common" //自定义的包
 )
 
 // 接口定义
 type Usb interface {
 	Start()
 	Stop()
+	// 私有方法，只能在本包中使用
+	privatePrint()
 }
 
 // Mp3 将接口两个方法都实现了
@@ -22,6 +22,9 @@ func (c *Mp3) Start() {
 }
 func (c *Mp3) Stop() {
 	fmt.Println(c.Name, "stop work")
+}
+func (c *Mp3) privatePrint() {
+	fmt.Println("private print")
 }
 
 // Phone 只实现了start方法
@@ -42,14 +45,5 @@ type Computer struct {
 func (c *Computer) Working(u Usb) {
 	u.Start()
 	u.Stop()
-}
-
-func main() {
-	fmt.Println("auth:%s", common.Name)
-	mp3 := Mp3{"mp3"}
-	computer := Computer{"computer"}
-	computer.Working(&mp3)
-
-	//phone := Phone{"phone"} //没有实现usb的两个方法
-	//computer.Working(&phone) //报错
+	u.privatePrint()
 }

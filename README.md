@@ -1,6 +1,6 @@
 # lind-go
 对go语言的学习
-# 基础知识
+# 一 golang基础知识
 Go（又称 Golang）是 Google 的 Robert Griesemer，Rob Pike 及 Ken Thompson 开发的一种计算机编程语言语言。
 **设计初衷**
 Go语言是谷歌推出的一种的编程语言，可以在不损失应用程序性能的情况下降低代码的复杂性。谷歌首席软件工程师罗布派克(Rob Pike)说：我们之所以开发Go，是因为过去10多年间软件开发的难度令人沮丧。派克表示，和今天的C++或C一样，Go是一种系统语言。他解释道，"使用它可以进行快速开发，同时它还是一个真正的编译语言，我们之所以现在将其开源，原因是我们认为它已经非常有用和强大。"
@@ -77,7 +77,209 @@ a[3] = "3"
 a[4] = "4"
 a[5] = "5"
 ```
-# 常量、接口和结构体
+# 二 golang 推荐的命名规范
+很少见人总结一些命名规范，也可能是笔者孤陋寡闻， 作为一个两年的golang 开发者， 我根据很多知名的项目，如 moby, kubernetess 等总结了一些常见的命名规范。
+命名规范可以使得代码更容易与阅读， 更少的出现错误。
+
+**文件命名规范**
+由于文件跟包无任何关系， 而又避免windows大小写的问题，所以推荐的明明规范如下：
+* 文件名应一律使用小写
+* 不同单词之间用下划线分割
+* 命名应尽可能地见名知意
+
+**常量命名规范**
+常量明明用 camelcase来命名示例如下
+```
+const todayNews = "Hello"
+
+// 如果超过了一个常量应该用括号的方法来组织
+
+const (
+systemName = "What"
+sysVal = "dasdsada"
+)
+```
+**变量命名规范**
+与常量命名方式一样，变量也应该使用驼峰的命名方式, 但注意尽量不与包名一致或者以包名开头
+```
+var x string
+x := new(string)
+```
+**函数命名规范**
+由于Golang的特殊性（用大小写来控制函数的可见性），除特殊的性能测试与单元测试函数之外, 都应该遵循如下原则
+* 使用驼峰命名
+* 如果`包外不需要访问请用小写开头`的函数
+* 如果需要`暴露出去给包外访问需要使用大写开头`的函数名称
+一个典型的函数命名方法如下：
+```go
+// 注释一律使用双斜线， 对象暴露的方法
+func (*fileDao) AddFile(file *model.File) bool {
+result := db.NewRecord(*file)
+if result {
+db.Create(file)
+}
+return result
+}
+
+// 不需要给包外访问的函数如下
+func removeCommaAndQuote(content string) string {
+re, _ := regexp.Compile("[\\`\\,]+")
+return strings.TrimSpace(re.ReplaceAllString(content, ""))
+}
+```
+**接口命名规范**
+接口命名也是要遵循驼峰方式命名， 可以用 type alias 来定义大写开头的type 给包外访问
+```
+type helloWorld interface {
+func Hello();
+}
+
+type SayHello helloWorld
+```
+**Struct命名规范**
+* 与接口命名规范类似
+
+**receiver 命名规范**
+golang 中存在receiver 的概念 receiver 名称应该尽量保持一致， 避免this, super，等其他语言的一些语义关键字如下
+```
+type A struct{}
+
+func (a *A) methodA() {
+}
+func (a *A) methodB() {
+a.methodA()
+}
+```
+
+**注释规范**
+* 注释应一律使用双斜线
+
+# 三 golang 方法接收者
+* [定义]： golang的方法(Method)是一个带有receiver的函数Function，Receiver是一个特定的struct类型，当你将函数Function附加到该receiver， 这个方法Method就能获取该receiver的属性和其他方法。
+* [面向对象]： golang方法Method允许你在类型上定义函数，是一个面向对象的行为代码， 这也有一些益处：同一个package可以有相同的方法名， 但是函数Function却不行。
+```go
+func (receiver receiver_type) some_func_name(arguments) return_values
+```
+从应用上讲，方法接受者分为值接收者，指针接收者，初级golang学者可能看过这两个接收者实际表现， 但是一直很混淆，很难记忆。
+
+## 值类型方法接收者
+* 值接受者： receiver是struct等值类型。
+下面定义了值类型接受者Person, 尝试使用Person{}, &Person{}去调用接受者函数。
+```
+package main
+import "fmt"
+
+type Person struct {
+ name  string
+ age int
+}
+
+func (p Person) say() {
+ fmt.Printf("I (%p) ma %s, %d years old \n",&p, p.name,p.age)
+}
+
+func (p Person) older(){  // 值类型方法接受者： 接受者是原类型值的副本
+ p.age = p.age +1
+ fmt.Printf("I (%p) am %s, %d years old\n", &p, p.name,p.age)
+}
+
+func main() {
+  p1 := Person{name: "zhangsan", age: 20}
+  p1.older()
+  p1.say()
+  fmt.Printf("I (%p) am  %s, %d years old\n",&p1, p1.name,p1.age)
+
+  p2 := &Person{ name: "sili", age: 20}
+  p2.older()   // 即使定义的是值类型接受者， 指针类型依旧可以使用，但我们传递进去的还是值类型的副本
+  p2.say()
+  fmt.Printf("I (%p) am %s, %d years old\n",p2, p2.name,p2.age)
+}
+```
+尝试改变p1=Person{},p2=&Person{}的字段值:
+```
+I (0xc000098078) am zhangsan, 21 years old
+I (0xc000098090) ma zhangsan, 20 years old
+I (0xc000098060) am  zhangsan, 20 years old
+I (0xc0000980c0) am sili, 21 years old
+I (0xc0000980d8) ma sili, 20 years old
+I (0xc0000980a8) am sili, 20 years old
+```
+p1=Person{} 未能修改原p1的字段值； p2=&Person{}也未能修改原p2的字段值。
+* 通过Person{}值去调用函数， 传入函数的是原值的副本， 这里通过第一行和第三行的%p印证 (%p：输出地址值， 这两个非同一地址)。
+* 即使定义的是值类型接收者，指针类型依旧可以调用函数， 但是传递进去的还是值类型的副本。
+> 带来的效果是：对值类型接收者内的字段操作，并不影响原调用者。
+
+## 指针类型接受者
+方法接收者也可以定义在指针上，任何尝试对指针接收者的修改，会体现到调用者。
+```
+package main
+
+import  "fmt"
+
+type Person struct{
+ name string
+ age int
+}
+
+func  (p Person) say(){
+ fmt.Printf("I (%p)  am %s, %d years old\n", &p, p.name,p.age)
+}
+
+func (p *Person) older(){   // 指针接受者，传递函数内部的是原类型值（指针）， 函数内的操作会体现到原指针指向的空间
+ p.age = p.age +1
+ fmt.Printf("I (%p)  am %s, %d years old\n", p, p.name,p.age)
+}
+
+func main() {
+ p1 := Person{"zhangsan",20}
+ p1.older()  // 虽然定义的是指针接受者，但是值类型依旧可以使用，但是会隐式传入指针值
+ p1.say()
+ fmt.Printf("I (%p)  am %s, %d years old\n", &p1, p1.name,p1.age)
+
+ p2:= &Person{"sili",20}
+ p2.older()
+ p2.say()
+ fmt.Printf("I (%p)  am %s, %d years old\n", p2, p2.name,p2.age)
+}
+```
+尝试改变p1= Person{}, p2=&Person{}字段值
+```
+I (0xc000098060)  am zhangsan, 21 years old
+I (0xc000098078)  am zhangsan, 21 years old
+I (0xc000098060)  am zhangsan, 21 years old
+I (0xc000098090)  am sili, 21 years old
+I (0xc0000980a8)  am sili, 21 years old
+I (0xc000098090)  am sili, 21 years old
+```
+p1=Person{} 成功修改字段值，p2=&Person{}也成功修改字段值。
+* 通过p1也可以调用指针函数接收者， 但是实际会隐式传递指针值。
+* 指针接收者，入参是原指针值，函数内的操作会体现到原调用者。
+> 带来的效果： 任何对指针接收者的修改会体现到 原调用者。
+
+## 什么时候使用指针接收者
+* 需要对接受者的变更能体现到原调用者
+* 当struct占用很大内存，最好使用指针接受者，否则每次调用接受者函数 都会形成struct的大副本
+
+## golang方法的几种姿势
+* 将接收者函数当扩展函数
+```go
+Person.say(p1)
+(*Person).older(p2)
+```
+* golang 方法链条
+```go
+func (p Person) printName() Person{
+  fmt.Printf("Name:%s", p.Name)
+  return p
+}
+* Non_struct类型golang方法
+```go
+type myFloat float64
+func (m myFloat) ceil() float64 {
+   return  math.Ceil(float64(m))
+}
+```
+# 四 golang 接口和结构体
 Go语言中没有“类”的概念:也不支持像继承这种面向对象的概念。但是Go 语言的结构体与“类”都是复合结构体:而且Go 语言中结构体的组合方式比面向对象具有更高的扩展性和灵活性。
 **结构体的定义和初始化**
 ```go
