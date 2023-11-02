@@ -7,7 +7,27 @@ import (
 	"time"
 )
 
+// 二分查找
+func binarySearch(nums []int, target int) bool {
+	left, right := 0, len(nums)-1
+	for left <= right {
+		Mid := left + (right-left)>>1
+		if nums[Mid] == target {
+			return true
+		} else if nums[Mid] > target {
+			right = Mid - 1
+		} else {
+			left = Mid + 1
+		}
+	}
+	return left < len(nums)
+}
+
 func main() {
+	nums := []int{1, 2, 3, 4, 5, 6, 7}
+	fmt.Println(binarySearch(nums, 10))
+	fmt.Println(binarySearch(nums, 3))
+
 	fmt.Printf("auth:%s", common.Name)
 	mp3 := common.Mp3{"mp3"} // :=这个运算符可以使变量在不声明的情况下直接被赋值使用
 	computer := common.Computer{"computer", nil}
