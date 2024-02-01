@@ -119,6 +119,6 @@ func main() {
 
 	// 直接初始化切片slices
 	slices := []int{1, 2, 3}
-	slices[1] = 22
+	slices[1] = 22 //修改第2位元素值变成22
 	fmt.Println(slices)
 }
