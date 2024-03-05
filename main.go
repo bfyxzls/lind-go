@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"lind-go/common"
+	"lind-go/generictype"
 	"net/url"
 	"regexp"
 	"time"
@@ -46,6 +47,13 @@ func getTimestamps(t time.Time) *Timestamps {
 }
 
 func main() {
+	// 泛型初始化与调用
+	aCluster := generictype.NewClusterClient(generictype.ACluster{Title: "title"})
+	aCluster.PrintMethod()
+
+	bCluster := generictype.NewClusterClient(generictype.BCluster{Age: 40})
+	bCluster.PrintMethod()
+
 	// 定义新类型，遍历map类型
 	ts := getTimestamps(time.Now())
 	for k, v := range *ts {
