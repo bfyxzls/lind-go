@@ -5,8 +5,11 @@ import (
 	"fmt"
 	"lind-go/common"
 	"lind-go/generictype"
+	"lind-go/util"
 	"net/url"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -46,7 +49,55 @@ func getTimestamps(t time.Time) *Timestamps {
 	return &ts
 }
 
+type RedisConfig struct {
+	name string
+}
+
+func (c *RedisConfig) printName() {
+	fmt.Println(c.name)
+}
+
+type LindRedisConfig struct {
+	RedisConfig
+	info string
+}
+
+func testStringContain() {
+	// 定义字符串数组
+	strArr := []string{"apple", "banana", "cherry"}
+
+	// 入参字符
+	character := "apple?a=1"
+
+	// 判断字符是否在数组中出现
+	for _, str := range strArr {
+		if strings.Contains(character, str) {
+			fmt.Printf("字符 %s 包含数组中的元素 %s 中\n", character, str)
+			return
+		}
+	}
+
+	fmt.Printf("字符 %s 不存在于数组中的任何元素中\n", character)
+}
+
 func main() {
+	testStringContain()
+
+	lindRedisConfig := LindRedisConfig{RedisConfig{"lind"}, "info"}
+	lindRedisConfig.printName()
+	fmt.Println(lindRedisConfig.name)
+
+	ipRange := "140.237.144.105-140.237.144.105"
+	ips := strings.Split(ipRange, "-")
+	startIP, _ := util.ConvertIPToScore(ips[0])
+	endIP, _ := util.ConvertIPToScore(ips[1])
+
+	fmt.Printf("startIp:%v,endIp:%v", startIP, endIP)
+	now0 := time.Now()
+	minuteAligned := now0.Truncate(time.Minute)
+	timeStamp := strconv.FormatInt(minuteAligned.Unix(), 10)
+	fmt.Println(timeStamp)
+
 	// 泛型初始化与调用
 	aCluster := generictype.NewClusterClient(generictype.ACluster{Title: "title"})
 	aCluster.PrintMethod()

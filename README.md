@@ -498,3 +498,24 @@ func main() {
 }
 ```
 通过这样的定义，我们可以很方便地创建不同类型的 ClusterClient 实例，而不需要为每种 Cluster 类型都单独定义一个 ClusterClient 类型。这样的泛型特性可以提高代码的复用性和灵活性。
+
+# 组合代替继承
+go中没有类，所以也就没有类的继承，如果希望使用面向对象中的继承特性，你可以通过组合来实现，即将结构的实例做为另一结构里的字段即可，如下代码实例：
+```go
+type RedisConfig struct {
+	name string
+}
+
+func (c *RedisConfig) printName() {
+	fmt.Println(c.name)
+}
+
+type LindRedisConfig struct {
+	RedisConfig
+	info string
+}
+func main() {
+lindRedisConfig := LindRedisConfig{RedisConfig{"lind"}, "info"}
+lindRedisConfig.printName() #可以直接使用RedisConfig中的方法printName，或者RedisConfig中的字段name
+}
+```
