@@ -1,4 +1,4 @@
-module lind-go
+module github.com/bfyxzls/lind-go
 
 go 1.20
 
