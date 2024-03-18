@@ -1,6 +1,7 @@
 # 将go的项目发到github作成开源公用包
 
 > 版本：v1.0.0，需要是3位的版本号，不然会报错
+> 注意：在安装时，如果你的大包lind-go下面有多个小包，那么你需要在每个小包下面都执行一遍下面的命令。如go get github.com/bfyxzls/lind-go/common
 
 # git标签
 ```
