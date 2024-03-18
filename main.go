@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
-	"lind-go/common"
-	"lind-go/generictype"
-	"lind-go/util"
+	"github.com/bfyxzls/lind-go/common"
+	"github.com/bfyxzls/lind-go/generictype"
+	"github.com/bfyxzls/lind-go/util"
 	"net/url"
 	"regexp"
 	"strconv"
