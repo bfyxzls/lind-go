@@ -1,4 +1,4 @@
-package main
+package test
 
 import (
 	"encoding/binary"
@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 )
 
@@ -80,7 +81,7 @@ func testStringContain() {
 	fmt.Printf("字符 %s 不存在于数组中的任何元素中\n", character)
 }
 
-func main() {
+func TestMain(m *testing.M) {
 	testStringContain()
 
 	lindRedisConfig := LindRedisConfig{RedisConfig{"lind"}, "info"}
