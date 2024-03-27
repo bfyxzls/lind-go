@@ -1,10 +1,9 @@
-package test
+package main
 
 import (
 	"encoding/binary"
 	"fmt"
 	"github.com/bfyxzls/lind-go/common"
-	"github.com/bfyxzls/lind-go/generictype"
 	"github.com/bfyxzls/lind-go/util"
 	"net/url"
 	"regexp"
@@ -98,13 +97,6 @@ func TestMain(m *testing.M) {
 	minuteAligned := now0.Truncate(time.Minute)
 	timeStamp := strconv.FormatInt(minuteAligned.Unix(), 10)
 	fmt.Println(timeStamp)
-
-	// 泛型初始化与调用
-	aCluster := generictype.NewClusterClient(generictype.ACluster{Title: "title"})
-	aCluster.PrintMethod()
-
-	bCluster := generictype.NewClusterClient(generictype.BCluster{Age: 40})
-	bCluster.PrintMethod()
 
 	// 定义新类型，遍历map类型
 	ts := getTimestamps(time.Now())
